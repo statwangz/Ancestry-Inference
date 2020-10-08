@@ -1,4 +1,4 @@
-# 读取plink处理过的基因型数据（0/1/2），文件名为"data"
+# 读取PLINK处理过的基因型数据（0/1/2），文件名为"data"
 gdata <- fread("data.raw", header = T)
 
 # 展示数据
