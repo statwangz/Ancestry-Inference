@@ -56,6 +56,7 @@ while(repeat_1){
   while (repeat_3) {
     
     t <- t + 1
+    
     # 计算权重
     rho <- (tau + t)^(-kap)
     
@@ -68,6 +69,7 @@ while(repeat_1){
     }
     
     theta <- theta_new
+    
   }
   
   # 每抽取25个基因存储一次theta值
