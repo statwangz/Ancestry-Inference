@@ -155,7 +155,7 @@ dt[ , !c("chinese", "english")]
 # 按照"math"排序，默认升序
 dt[order(math)]
 dt[order(math), ]
-dt[order(math, decreasin = T)] # 降序
+dt[order(math, decreasing = T)] # 降序
 ```
 
 ## []内操作
@@ -195,7 +195,7 @@ dt[ , mean(math), by=c("class", "sex")]
 
 ## key
 
-`data.table`的行名默认为`"1" "2" "3"`，且无法像`data.frame`一样通过`ronames()`函数有效地修改:
+`data.table`的行名默认为`"1" "2" "3"`，且无法像`data.frame`一样通过`rownames()`函数有效地修改:
 ```r
 rownames(dt) # "1" "2" "3" "4"
 rownames(dt) <- letters[1:4]
@@ -238,5 +238,5 @@ dt[.(2)]
 df <- data.frame(class, sex, chinese, math, english, row.names = name)
 dt1 <- as.data.table(df)
 dt2 <- as.data.table(df, keep.rownames = T)         # 保留原数据框行名作为一列，列名为"rn"
-dt3 <- as.data.table(df, keep.rownames = "rowname") # 自定义列名
+dt3 <- as.data.table(df, keep.rownames = "name") # 自定义列名
 ```
