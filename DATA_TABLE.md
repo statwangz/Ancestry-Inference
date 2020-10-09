@@ -237,6 +237,6 @@ dt[.(2)]
 ```r
 df <- data.frame(class, sex, chinese, math, english, row.names = name)
 dt1 <- as.data.table(df)
-dt2 <- as.data.table(df, keep.rownames = T)         # 保留原数据框行名作为一列，列名为"rn"
-dt3 <- as.data.table(df, keep.rownames = "name")    # 自定义列名
+dt2 <- as.data.table(df, keep.rownames = T)      # 保留原数据框行名作为一列，列名为"rn"
+dt3 <- as.data.table(df, keep.rownames = "name") # 自定义列名
 ```
