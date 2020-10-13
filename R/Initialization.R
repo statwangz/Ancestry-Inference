@@ -1,6 +1,6 @@
 K <- 3           # 预设祖先群体数，这里设定为3
-N <- nrow(gdata) # 人数
-L <- ncol(gdata) # 检测位点数
+N <- nrow(g_data) # 人数
+L <- ncol(g_data) # 检测位点数
 
 ## 超参数设定
 

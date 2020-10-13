@@ -12,7 +12,7 @@ while(repeat_1){
   xi <- matrix(0, nrow = N, ncol = K)
   
   l <- sample(1:L, 1)
-  gdata_l <- gdata[[l]]
+  g_data_l <- g_data[[l]]
   
   beta_new <- matrix(nrow = K, ncol = 2)
   phi_new <- matrix(nrow = N, ncol = K)
@@ -34,8 +34,8 @@ while(repeat_1){
     xi_new <- t(apply(y, MARGIN = 2, FUN = LogSumExp))
     
     # 更新beta参数
-    beta_new[ , 1] <- a + as.vector(t(gdata_l) %*% phi_new)
-    beta_new[ , 2] <- b + as.vector(t(2 - gdata_l) %*% xi_new)
+    beta_new[ , 1] <- a + as.vector(t(g_data_l) %*% phi_new)
+    beta_new[ , 2] <- b + as.vector(t(2 - g_data_l) %*% xi_new)
     
     # 判断phi, xi, beta是否收敛
     if(DMatrix(beta_new, beta[ , l, ]) + DMatrix(phi_new, phi) + DMatrix(xi_new, xi) < 1e-3){
@@ -61,7 +61,7 @@ while(repeat_1){
     rho <- (tau + t)^(-kap)
     
     # 更新theta
-    theta_new <- (1 - rho) * theta + rho * (c + L * (gdata_l * phi + (2 - gdata_l) * xi))
+    theta_new <- (1 - rho) * theta + rho * (c + L * (g_data_l * phi + (2 - g_data_l) * xi))
     # 数*矩阵，向量*矩阵，自动循环补齐，N*K
     
     if(DMatrix(theta_new, theta) < 1e-3){
