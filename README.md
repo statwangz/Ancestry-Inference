@@ -16,7 +16,7 @@ In this project, I refer to "Scaling probabilistic models of genetic variation t
 
 - You can also use the `genio` (GenIO = Genetics I/O) package which aims to facilitate reading and writing genetics data. It's more constrained, user-friendly, and efficient.
 
-  `genio`: <https://cran.rstudio.com/web/packages/genio/>
+  `genio`: <https://CRAN.R-project.org/package=genio>
 
 ## References
 
