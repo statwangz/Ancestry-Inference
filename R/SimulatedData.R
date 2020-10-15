@@ -128,4 +128,4 @@ p + geom_point(color = pop_k4$clustering + 1, alpha = 1/2, size = 2) +
   labs(title="PCA")
 
 # 结果与真实参数的差距
-DMatrix(E_theta, theta_s)*100%
+DMatrix(E_theta, theta_s)
