@@ -14,6 +14,6 @@ g_data[1:6, g_name[1:6], with = F]
 
 ## 方法二：genio
 
-# 读取BED/BIM/FAM文件，文件名为"1kg_phase1_all_1m"
+# 读取 BED/BIM/FAM 文件，文件名为"1kg_phase1_all_1m"
 g_data_list <- read_plink("1kg_phase1_all_1m")
 g_data <- as.data.table(t(g_data_list$X))

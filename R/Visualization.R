@@ -1,7 +1,7 @@
-# 查看哪次迭代后的结果，这里选25*12
+# 查看哪次迭代后的结果，这里选 25*12
 i <- 12
 
-# 计算theta期望
+# 计算 theta 期望
 E_theta <- matrix(nrow = N, ncol = K)
 E_theta <- t(apply(theta_r[i, , ], MARGIN = 1, FUN = function(x){x/sum(x)}))
 
@@ -11,7 +11,7 @@ summary(theta_PCA, loadings = T)
 PC_1 <- theta_PCA$scores[ , 1]
 PC_2 <- theta_PCA$scores[ , 2]
 
-# 聚类，这里选定聚类数为4
+# 聚类，这里选定聚类数为 4
 pop_k4 <- pam(E_theta, k = 4)
 table(pop_k4$clustering)
 

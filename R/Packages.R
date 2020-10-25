@@ -1,10 +1,10 @@
-# 处理大量数据时可以用"data.table"包里的"fread"函数
-install("data.table")
-library(data.table)
-
-# 读写plink BED/BIM/FAM格式文件
+# 读写 plink BED/BIM/FAM 格式文件
 install.packages("genio")
 library(genio)
+
+# 处理大量数据时可以用"data.table"包里的"fread()"函数
+install("data.table")
+library(data.table)
 
 # 聚类分析
 install.packages("cluster")
