@@ -45,7 +45,7 @@ while(repeat_1){
   
   s <- s + 1
   
-  g_data_l <- g_data_s[[s]]
+  g_data_l <- g_data_s[ , s]
   
   beta_new <- matrix(nrow = K, ncol = 2)
   phi_new <- matrix(nrow = N_s, ncol = K)
