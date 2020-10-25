@@ -2,23 +2,24 @@
 write.table(E_theta, "theta.txt", row.names = F, col.names = F)
 write.table(E_beta[ , , 1], "beta.txt", row.names = F, col.names = F)
 
-theta_s <- as.matrix(read.table("theta.txt"))
-beta_s <- as.matrix(read.table("beta.txt"))
+theta_real <- as.matrix(read.table("theta.txt")) # 真实血统比例
+beta_real <- as.matrix(read.table("beta.txt"))   # 真实基因频率
 
-# 按照PSD model模拟基因数据
+# 按照 PSD model 模拟基因数据
 
 # 设置模拟数据集规模
 N_s <- N    # 这里人数设置为与真实数据集相同
-L_s <- 1000 # 这里基因数设置为1000
+L_s <- 1000 # 这里基因数设置为 1000
+K <- 3      # K 依然为3 
 
-# 基因型0/1/2 ~ Binomial(2, p_il)，p_il = sum_k(theta_ik * beta_kl) 
-p <- theta_s %*% beta_s
+# 基因型 X = 0/1/2 ~ Binomial(2, p_il)，p_il = sum_k(theta_ik * beta_kl)
+p <- theta_real %*% beta_real
 g_data_s <- as.data.table(matrix(rbinom(n = N_s*L_s, size = 2, prob = as.vector(p)), nrow = N_s, ncol = L_s))
 fwrite(g_data_s, "simulated_data.txt", row.names = F, col.names = F)
 
 # 下面开始验证
 
-g_data_s <- fread("simulated_data.txt")
+g_data_s <- as.matrix(read.table("simulated_data.txt"))
 
 # 初始化
 
@@ -27,17 +28,18 @@ tau <- 1
 kap <- 0.5
 a <- 1
 b <- 1
-theta <- matrix(rgamma(N_s*K, 100, 0.01), nrow = N_s, ncol = K)
-beta <- array(rbeta(K*L_s*2, a, b), dim = c(K, L_s, 2))
+theta_s <- matrix(rgamma(N_s*K, 100, 0.01), nrow = N_s, ncol = K)
+beta_s <- array(rbeta(K*L_s*2, a, b), dim = c(K, L_s, 2))
 
 # 开始处理数据
 
 repeat_1 <- TRUE
-s <- 0 # 循环次数
+s <- 0
+
+lower_bound <- numeric(length = L_s)
 
 while(repeat_1){
   
-  # 辅助参数
   phi <- matrix(0, nrow = N_s, ncol = K)
   xi <- matrix(0, nrow = N_s, ncol = K)
   
@@ -53,64 +55,60 @@ while(repeat_1){
   
   while(repeat_2){
     
-    e_log_dir <- apply(theta, MARGIN = 1, FUN = ELogDir) # 输出结果每一列为每个人的E_Log_Dir
-    e_log_beta_1 <-  apply(beta[ , s, ], MARGIN = 1, FUN = ELogBeta1)
-    e_log_beta_2 <-  apply(beta[ , s, ], MARGIN = 1, FUN = ELogBeta2)
+    e_log_dir <- apply(theta_s, MARGIN = 1, FUN = ELogDir)
+    e_log_beta_1 <-  apply(beta_s[ , s, ], MARGIN = 1, FUN = ELogBeta1)
+    e_log_beta_2 <-  apply(beta_s[ , s, ], MARGIN = 1, FUN = ELogBeta2)
     
-    x <- e_log_dir + e_log_beta_1 # 矩阵+向量，自动循环补齐，K*N，每一列为每个人的数据
+    x <- e_log_dir + e_log_beta_1
     y <- e_log_dir + e_log_beta_2
     
-    # log-sum-exp
     phi_new <- t(apply(x, MARGIN = 2, FUN = LogSumExp))
     xi_new <- t(apply(y, MARGIN = 2, FUN = LogSumExp))
     
-    # 更新beta参数
     beta_new[ , 1] <- a + as.vector(t(g_data_l) %*% phi_new)
     beta_new[ , 2] <- b + as.vector(t(2 - g_data_l) %*% xi_new)
     
-    # 判断phi, xi, beta是否收敛
-    if(DMatrix(beta_new, beta[ , s, ]) + DMatrix(phi_new, phi) + DMatrix(xi_new, xi) < 1e-3){
+    if(DMatrix(beta_new, beta_s[ , s, ]) + DMatrix(phi_new, phi) + DMatrix(xi_new, xi) < 1e-3){
       repeat_2 <- FALSE
     }
     
     phi <- phi_new
     xi <- xi_new
-    beta[ , s, ] <- beta_new
+    beta_s[ , s, ] <- beta_new
     
   }
  
   theta_new <- matrix(nrow = N_s, ncol = K)
   
   repeat_3 <- TRUE
-  t <- 0 # 循环次数，用于计算rho
+  t <- 0
   
   while (repeat_3) {
     
     t <- t + 1
-    # 计算权重
+    
     rho <- (tau + t)^(-kap)
+    theta_new <- (1 - rho) * theta_s + rho * (c + L_s * (g_data_l * phi + (2 - g_data_l) * xi))
     
-    # 更新theta
-    theta_new <- (1 - rho) * theta + rho * (c + L_s * (g_data_l * phi + (2 - g_data_l) * xi))
-    # 数*矩阵，向量*矩阵，自动循环补齐，N*K
-    
-    if(DMatrix(theta_new, theta) < 1e-3){
+    if(DMatrix(theta_new, theta_s) < 1e-3){
       repeat_3 <- FALSE
     }
     
-    theta <- theta_new
+    theta_s <- theta_new
     
   }
   
-  if(s == L_m){
+  if(s == L_s){
     repeat_1 <- FALSE
   }
+  
+  lower_bound[s] <- LowerBound(g_data_s, theta_s, beta_s, K, N_s, L_s)
   
 }
 
 # PCA
 E_theta <- matrix(nrow = N_m, ncol = K)
-E_theta <- t(apply(theta, MARGIN = 1, FUN = function(x){x/sum(x)}))
+E_theta <- t(apply(theta_s, MARGIN = 1, FUN = function(x){x/sum(x)}))
 theta_PCA <- princomp(E_theta)
 summary(theta_PCA, loadings = T)
 
@@ -128,4 +126,5 @@ p + geom_point(color = pop_k4$clustering + 1, alpha = 1/2, size = 2) +
   labs(title="PCA")
 
 # 结果与真实参数的差距
-DMatrix(E_theta, theta_s)
+DMatrix(E_theta, theta_real)
+write.table(E_theta, "theta_results.txt", row.names = F, col.names = F)
