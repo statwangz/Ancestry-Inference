@@ -3,15 +3,12 @@ N <- nrow(g_data) # 人数
 L <- ncol(g_data) # 检测位点数
 
 ## 超参数设定
-
 # Dirichlet
 c <- 1/K
-
 # 用于计算 theta 参数更新时的权重
 tau <- 1
 kap <- 0.5
-
-# 初始 Beta 参数
+# Beta
 a <- 1
 b <- 1
 

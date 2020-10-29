@@ -6,7 +6,7 @@ In this project, I refer to "Scaling probabilistic models of genetic variation t
 
 ## Data
 
-- The genetics data is from Professor Can Yang of the Department of mathematics, The Hong Kong University of Science and Technology.
+- The genetics data is from Professor Can Yang of the Department of Mathematics, The Hong Kong University of Science and Technology.
 
   download link: <https://hkustconnect-my.sharepoint.com/:u:/g/personal/jxiaoae_connect_ust_hk/EblyIlluaMpBmdRTDRqWftABhkuWR8tsryQqI5weOxjpTw?e=Fd41zS>
 
