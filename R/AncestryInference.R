@@ -39,7 +39,7 @@ while(repeat_1){
     beta_new[ , 2] <- b + as.vector(t(2 - g_data_l) %*% xi_new)
     
     # 判断 phi, xi, beta 是否收敛
-    if(DMatrix(beta_new, beta[ , l, ]) + DMatrix(phi_new, phi) + DMatrix(xi_new, xi) < 1e-3){
+    if(Distance(beta_new, beta[ , l, ]) + Distance(phi_new, phi) + Distance(xi_new, xi) < 1e-3){
       repeat_2 <- FALSE
     }
     
@@ -65,7 +65,7 @@ while(repeat_1){
     theta_new <- (1 - rho) * theta + rho * (c + L * (g_data_l * phi + (2 - g_data_l) * xi))
     # 数*矩阵，向量*矩阵，自动循环补齐，N*K
     
-    if(DMatrix(theta_new, theta) < 1e-3){
+    if(Distance(theta_new, theta) < 1e-3){
       repeat_3 <- FALSE
     }
     
