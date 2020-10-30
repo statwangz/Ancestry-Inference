@@ -1,7 +1,7 @@
 # 用于判断是否收敛
-DMatrix <- function(matrix_new, matrix_old){
-  d <- abs(matrix_new - matrix_old)
-  sum(d)/sum(abs(matrix_new))
+Distance <- function(new, old){
+  d <- abs(new - old)
+  sum(d)/sum(abs(new))
 }
 
 # X ~ Beta，计算 ln(X) 的期望
@@ -24,10 +24,11 @@ LogSumExp <- function(x){
 }
 
 # 计算 Lower Bound
-LowerBound <- function(g_data, theta, beta, K){
+LowerBound <- function(g_data, theta, beta){
   
   N <- nrow(g_data)
   L <- ncol(g_data)
+  K <- ncol(theta)
   
   e_log_dir <- apply(theta, MARGIN = 1, FUN = ELogDir) # 输出结果每一列为每个人的 E_Log_Dir，K*N
   e_log_beta_1 <-  apply(beta, MARGIN = c(1, 2), FUN = ELogBeta1) # K*L
@@ -39,19 +40,20 @@ LowerBound <- function(g_data, theta, beta, K){
   
   E_3 <- sum(as.vector(t(c - theta)) * as.vector(e_log_dir))
   
-  x <- array(as.vector(apply(e_log_beta_1, MARGIN = 2, FUN = function(x){x + e_log_dir})), dim = c(K, N, L)) # 输出结果每一列为每个基因的信息，相当于对每个基因抽样分析后得到的x矩阵
+  # 输出结果每一列为每个基因的信息，相当于对每个基因抽样分析后得到的x矩阵
+  x <- array(as.vector(apply(e_log_beta_1, MARGIN = 2, FUN = function(x){x + e_log_dir})), dim = c(K, N, L))
   y <- array(as.vector(apply(e_log_beta_2, MARGIN = 2, FUN = function(x){x + e_log_dir})), dim = c(K, N, L))
   
   phi <- apply(x, MARGIN = c(2,3), FUN = LogSumExp) # K*N*L
   xi <- apply(y, MARGIN = c(2,3), FUN = LogSumExp)
   
-  e_log_dir_comp <- array(rep(e_log_dir, L), dim = c(K, N, L))
-  e_log_beta_1_comp <- array(t(apply(array(rep(e_log_beta_1, N), dim = c(K, L, N)), MARGIN = 1, t)), dim = c(K, N, L))
-  e_log_beta_2_comp <- array(t(apply(array(rep(e_log_beta_2, N), dim = c(K, L, N)), MARGIN = 1, t)), dim = c(K, N, L))
+  e_log_dir_temp <- array(rep(e_log_dir, L), dim = c(K, N, L))
+  e_log_beta_1_temp <- array(t(apply(array(rep(e_log_beta_1, N), dim = c(K, L, N)), MARGIN = 1, t)), dim = c(K, N, L))
+  e_log_beta_2_temp <- array(t(apply(array(rep(e_log_beta_2, N), dim = c(K, L, N)), MARGIN = 1, t)), dim = c(K, N, L))
   
   
-  E_4 <- sum(as.vector(g_data) * as.vector(apply(array(as.vector(phi) * as.vector(e_log_dir_comp + e_log_beta_1_comp - log(phi)), dim = c(K, N, L)), MARGIN = c(2, 3), sum)))
-  E_5 <- sum(as.vector(2 - g_data) * as.vector(apply(array(as.vector(xi) * as.vector(e_log_dir_comp + e_log_beta_2_comp - log(xi)), dim = c(K, N, L)), MARGIN = c(2, 3), sum)))
+  E_4 <- sum(as.vector(g_data) * as.vector(apply(array(as.vector(phi) * as.vector(e_log_dir_temp + e_log_beta_1_temp - log(phi)), dim = c(K, N, L)), MARGIN = c(2, 3), sum)))
+  E_5 <- sum(as.vector(2 - g_data) * as.vector(apply(array(as.vector(xi) * as.vector(e_log_dir_temp + e_log_beta_2_temp - log(xi)), dim = c(K, N, L)), MARGIN = c(2, 3), sum)))
   
   return(E_1 + E_2 + E_3 + E_4 + E_5)
   
