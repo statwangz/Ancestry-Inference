@@ -98,4 +98,4 @@ E_theta <- t(apply(theta_s, MARGIN = 1, FUN = function(x){x/sum(x)}))
 
 # 结果与真实参数的差距
 Distance(E_theta, theta_real)
-write.table(E_theta, "theta_results.txt", row.names = F, col.names = F)
+write.table(E_theta, "theta_results_SVI.txt", row.names = F, col.names = F)
