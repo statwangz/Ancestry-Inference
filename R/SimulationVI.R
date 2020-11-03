@@ -8,7 +8,7 @@ L_s <- ncol(g_data_s)
 K <- ncol(theta_real)
 
 # 最大循环次数
-MAX <- 10000
+MAX <- floor(L_s/2)
 
 # 初始化
 c <- 1/K
@@ -16,6 +16,8 @@ a <- 1
 b <- 1
 theta_s <- matrix(rgamma(N_s*K, 100, 0.01), nrow = N_s, ncol = K)
 beta_s <- array(rbeta(K*L_s*2, a, b), dim = c(K, L_s, 2))
+
+# 储存 Lower Bound
 lower_bound <- numeric(length = MAX)
 
 # 开始处理数据
@@ -24,8 +26,8 @@ lower_bound <- numeric(length = MAX)
 g_data_temp <- array(t(apply(array(rep(g_data_s, K), dim = c(N_s, L_s, K)), MARGIN = 3, as.vector)), dim = c(K, N_s, L_s))
 
 repeat_1 <- TRUE
-s <- 1 # 计数器
-lower_bound[s] <- LowerBound(g_data_s, theta_s, beta_s)
+s <- 0 # 计数器
+lower_bound_0 <- LowerBound(g_data_s, theta_s, beta_s)
 
 while(repeat_1){
   
@@ -78,7 +80,7 @@ while(repeat_1){
   lower_bound[s] <- LowerBound(g_data_s, theta_s, beta_s)
   
   # 通过判断 Lower Bound 是否收敛来决定是否结束循环
-  if((s == MAX) | (!is.na(lower_bound[s]) & !is.na(lower_bound[s-1]) & Distance(lower_bound[s], lower_bound[s-1]) < 1e-3)){
+  if((s == MAX) | (!is.nan(lower_bound[s]) & isFALSE(is.nan(lower_bound[s-1])) & Distance(lower_bound[s], lower_bound[s-1]) < 1e-3)){
     repeat_1 <- FALSE
   }
   

@@ -1,10 +1,13 @@
 # 用随机变分推断方法处理模拟数据集
 
 g_data_s <- as.matrix(read.table("simulated_data.txt"))
-theta_s <- as.matrix(read.table("theta.txt"))
+theta_real <- as.matrix(read.table("theta.txt"))
+N_s <- nrow(g_data_s)
+L_s <- ncol(g_data_s)
+K <- ncol(theta_real)
 
 # 最大循环次数
-MAX <- 10000
+MAX <- 1000
 
 # 初始化
 c <- 1/K
@@ -14,13 +17,18 @@ a <- 1
 b <- 1
 theta_s <- matrix(rgamma(N_s*K, 100, 0.01), nrow = N_s, ncol = K)
 beta_s <- array(rbeta(K*L_s*2, a, b), dim = c(K, L_s, 2))
+
+# 储存 Lower Bound，每更新一列基因数据更新一次
 lower_bound <- numeric(length = MAX)
+
+# 储存更新后的 theta， 每更新 50 次储存一次
+theta_array <- array(dim = c(MAX/50, N_s, K))
 
 # 开始处理数据
 
 repeat_1 <- TRUE
-s <- 1 # 计数器
-lower_bound[s] <- LowerBound(g_data_s, theta_s, beta_s)
+s <- 0 # 计数器
+lower_bound_0 <- LowerBound(g_data_s, theta_s, beta_s)
 
 while(repeat_1){
   
@@ -82,18 +90,22 @@ while(repeat_1){
     
   }
   
-  # 计算 Lower Bound
   lower_bound[s] <- LowerBound(g_data_s, theta_s, beta_s)
+
+  # 记录更新过程中的 theta
+  if(s/50 == 0){
+    theta_array[s/50, , ] <- theta_s
+  }
   
-  # 通过判断 Lower Bound 是否收敛来决定是否结束循环
-  if((s == MAX) | (!is.na(lower_bound[s]) & !is.na(lower_bound[s-1]) & Distance(lower_bound[s], lower_bound[s-1]) < 1e-3)){
+  # 更新 MAX 次后停止
+  if(s == MAX){
     repeat_1 <- FALSE
   }
   
 }
 
 # PCA
-E_theta <- matrix(nrow = N_m, ncol = K)
+E_theta <- matrix(nrow = N_s, ncol = K)
 E_theta <- t(apply(theta_s, MARGIN = 1, FUN = function(x){x/sum(x)}))
 
 # 结果与真实参数的差距
