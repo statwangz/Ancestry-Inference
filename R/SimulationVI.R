@@ -8,7 +8,7 @@ L_s <- ncol(g_data_s)
 K <- ncol(theta_real)
 
 # 最大循环次数
-MAX <- floor(L_s/2)
+MAX <- 10000
 
 # 初始化
 c <- 1/K
@@ -25,16 +25,16 @@ lower_bound <- numeric(length = MAX)
 # 将基因数据复制扩展为K*N*L维，便于后面的计算
 g_data_temp <- array(t(apply(array(rep(g_data_s, K), dim = c(N_s, L_s, K)), MARGIN = 3, as.vector)), dim = c(K, N_s, L_s))
 
-repeat_1 <- TRUE
+repeat_1 <- TRUE # 控制循环
 s <- 0 # 计数器
 lower_bound_0 <- LowerBound(g_data_s, theta_s, beta_s)
 
 while(repeat_1){
   
+  s <- s + 1
+  
   phi <- array(0, dim = c(K, N_s, L_s))
   xi <- array(0, dim = c(K, N_s, L_s))
-  
-  s <- s + 1
   
   beta_new <- array(dim = c(K, L_s, 2))
   phi_new <- array(dim = c(K, N_s, L_s))
@@ -86,6 +86,7 @@ while(repeat_1){
   
 }
 
+# 计算期望
 E_theta <- matrix(nrow = N_s, ncol = K)
 E_theta <- t(apply(theta_s, MARGIN = 1, FUN = function(x){x/sum(x)}))
 

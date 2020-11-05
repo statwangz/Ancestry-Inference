@@ -7,7 +7,7 @@ L_s <- ncol(g_data_s)
 K <- ncol(theta_real)
 
 # 最大循环次数
-MAX <- 1000
+MAX <- floor(L_s/3)
 
 # 初始化
 c <- 1/K
@@ -22,11 +22,11 @@ beta_s <- array(rbeta(K*L_s*2, a, b), dim = c(K, L_s, 2))
 lower_bound <- numeric(length = MAX)
 
 # 储存更新后的 theta， 每更新 50 次储存一次
-theta_array <- array(dim = c(MAX/50, N_s, K))
+theta_array <- array(dim = c(floor(MAX/50), N_s, K))
 
 # 开始处理数据
 
-repeat_1 <- TRUE
+repeat_1 <- TRUE # 控制循环
 s <- 0 # 计数器
 lower_bound_0 <- LowerBound(g_data_s, theta_s, beta_s)
 
@@ -104,7 +104,7 @@ while(repeat_1){
   
 }
 
-# PCA
+# 计算期望
 E_theta <- matrix(nrow = N_s, ncol = K)
 E_theta <- t(apply(theta_s, MARGIN = 1, FUN = function(x){x/sum(x)}))
 
