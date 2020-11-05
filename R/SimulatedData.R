@@ -22,7 +22,7 @@ K <- nrow(beta_real)
 # 基因型 X = 0/1/2 ~ Binomial(2, p_il)，p_il = sum_k(theta_ik * beta_kl)
 p <- theta_real %*% beta_real
 g_data_s <- as.data.table(matrix(rbinom(n = N_s*L_s, size = 2, prob = as.vector(p)), nrow = N_s, ncol = L_s))
-fwrite(g_data_s, "simulated_data.txt", row.names = F, col.names = F)
+write.table(g_data_s, "simulated_data.txt", row.names = F, col.names = F)
 
 ## 数据集二：即原 paper 中生成模拟数据集的第二种方法
 
@@ -54,4 +54,4 @@ write.table(theta_real, "theta_real.txt", row.names = F, col.names = F) # N*K
 # 生成基因型并存储，同方法一
 p <- theta_real %*% beta_real
 g_data_s <- as.data.table(matrix(rbinom(n = N_s*L_s, size = 2, prob = as.vector(p)), nrow = N_s, ncol = L_s))
-fwrite(g_data_s, "simulated_data.txt", row.names = F, col.names = F)
+write.table(g_data_s, "simulated_data.txt", row.names = F, col.names = F)

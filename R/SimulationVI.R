@@ -2,7 +2,7 @@
 
 # 读取模拟数据集
 g_data_s <- as.matrix(read.table("simulated_data.txt"))
-theta_real <- as.matrix(read.table("theta.txt"))
+theta_real <- as.matrix(read.table("theta_real.txt"))
 N_s <- nrow(g_data_s)
 L_s <- ncol(g_data_s)
 K <- ncol(theta_real)

@@ -13,3 +13,7 @@ library(cluster)
 # 绘图
 install.packages("ggplot2")
 library(ggplot2)
+
+# 将宽数据变为长数据，用于画图
+install.packages("reshape2")
+library(reshape2)

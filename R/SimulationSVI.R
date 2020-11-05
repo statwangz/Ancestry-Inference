@@ -1,13 +1,13 @@
 # 用随机变分推断方法处理模拟数据集
 
 g_data_s <- as.matrix(read.table("simulated_data.txt"))
-theta_real <- as.matrix(read.table("theta.txt"))
+theta_real <- as.matrix(read.table("theta_real.txt"))
 N_s <- nrow(g_data_s)
 L_s <- ncol(g_data_s)
 K <- ncol(theta_real)
 
 # 最大循环次数
-MAX <- floor(L_s/3)
+MAX <- floor(L_s/4) # 取总基因数的 25% 进行计算
 
 # 初始化
 c <- 1/K
@@ -19,6 +19,7 @@ theta_s <- matrix(rgamma(N_s*K, 100, 0.01), nrow = N_s, ncol = K)
 beta_s <- array(rbeta(K*L_s*2, a, b), dim = c(K, L_s, 2))
 
 # 储存 Lower Bound，每更新一列基因数据更新一次
+# 一般情况下当抽取基因比例较小时，Lower Bound 很小（考虑没有参与计算的 beta），所以没有计算的意义
 lower_bound <- numeric(length = MAX)
 
 # 储存更新后的 theta， 每更新 50 次储存一次
@@ -93,7 +94,7 @@ while(repeat_1){
   lower_bound[s] <- LowerBound(g_data_s, theta_s, beta_s)
 
   # 记录更新过程中的 theta
-  if(s/50 == 0){
+  if(s%%50 == 0){
     theta_array[s/50, , ] <- theta_s
   }
   

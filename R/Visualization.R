@@ -21,3 +21,10 @@ p + geom_point(color = pop_k4$clustering + 1, alpha = 1/2, size = 2) +
   scale_x_continuous(name = "PC 1", limits = range(PC_1)) +
   scale_y_continuous(name = "PC 2", limits = range(PC_2)) +
   labs(title="PCA")
+
+# 血统比例图
+theta_plot <- cbind(c(1:N), E_theta)
+colnames(theta_plot) <- c("ID", "K1", "K2", "K3")
+theta_plot <- melt(as.data.frame(theta_plot), id.vars = "ID", variable.name = "K", value.name = "Proportion")
+ggplot(theta_plot, aes(ID, Proportion, fill = K)) +
+  geom_bar(stat = "identity", position = "fill")
